@@ -68,6 +68,18 @@ python3 cli.py s3 delete --name my-bucket
 
 העלאת קובץ ל־S3
 python3 cli.py s3 upload --bucket my-bucket --file /path/to/file.txt
+# יצירת באקט
+python3 cli.py s3 create --name marom-bucket-test
+
+# העלאת קובץ
+python3 cli.py s3 upload --bucket marom-bucket-test --file ./document.txt
+
+# הצגת הקבצים בבאקט
+python3 cli.py s3 list --bucket marom-bucket-test
+
+# מחיקת קובץ
+python3 cli.py s3 delete --bucket marom-bucket-test --file document.txt
+
 
 
 אפשר גם להגדיר שם ייחודי לאובייקט:
