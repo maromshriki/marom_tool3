@@ -29,6 +29,8 @@ def main():
     s3_upload = s3_subparsers.add_parser("upload", help="Upload file to bucket")
     s3_upload.add_argument("--bucket", required=True, help="Bucket name")
     s3_upload.add_argument("--file", required=True, help="File path")
+    s3_delete = s3_subparsers.add_parser("delete", help="Delete S3 bucket")
+    s3_delete.add_argument("--name", required=True, help="Bucket name")
 
     # Route53
     r53_parser = subparsers.add_parser("route53", help="Route53 operations")
@@ -55,6 +57,8 @@ def main():
             print(s3_handler.create_bucket(args.name))
         elif args.action == "upload":
             print(s3_handler.upload_file(args.bucket, args.file))
+        elif args.action == "delete":
+            print(s3_handler.delete_bucket(args.name))    
 
     elif args.service == "route53":
         if args.action == "create-record":
