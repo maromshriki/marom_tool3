@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import argparse
 from handlers import ec2_handler, s3_handler, route53_handler
 
