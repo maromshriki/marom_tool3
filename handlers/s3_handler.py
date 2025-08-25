@@ -1,12 +1,12 @@
-import boto3
-import os
+import boto3, os
 
 def create_bucket(bucket_name):
+    region = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
+    print(f"==> Using region: {region}")
+    s3 = boto3.client("s3", region_name=region)
+    print(f"==> Using endpoint: {s3.meta.endpoint_url}")
+
     try:
-        region = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
-        print(f"==> Using region: {region}")
-        s3 = boto3.client("s3", region_name=region)
-        print(f"==> Using endpoint: {s3.meta.endpoint_url}")
         if region == "us-east-1":
             s3.create_bucket(Bucket=bucket_name)
         else:
@@ -16,17 +16,12 @@ def create_bucket(bucket_name):
             )
         return f"✅ Bucket נוצר בהצלחה: {bucket_name}"
     except Exception as e:
-        return f"❌ שגיאה ביצירת bucket: {str(e)}"
+        return f"❌ שגיאה ביצירת bucket: {e}"
 
-def list_buckets():
-    s3 = boto3.client("s3")
-    resp = s3.list_buckets()
-    return [b["Name"] for b in resp["Buckets"]]
-
-def delete_bucket(bucket_name):
+def upload_file(bucket_name, file_path):
     s3 = boto3.client("s3")
     try:
-        s3.delete_bucket(Bucket=bucket_name)
-        return f"🗑️ Bucket נמחק בהצלחה: {bucket_name}"
+        s3.upload_file(file_path, bucket_name, os.path.basename(file_path))
+        return f"📤 הקובץ {file_path} הועלה בהצלחה ל-{bucket_name}"
     except Exception as e:
-        return f"❌ שגיאה במחיקת bucket: {str(e)}"
+        return f"❌ שגיאה בהעלאת קובץ: {e}"
