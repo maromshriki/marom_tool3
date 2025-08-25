@@ -1,4 +1,4 @@
-marom_tool4 – CLI לניהול משאבים ב־AWS
+היי זהו כלי cli:
 
 כלי שורת פקודה (CLI) פשוט ב־Python לניהול משאבי AWS:
 EC2, ‏S3, ‏Route53.
@@ -6,10 +6,12 @@ EC2, ‏S3, ‏Route53.
 
 
 הורד git 
+
     sudo yum install git -y
     
 וודא שיש לך Python 3.9+ מותקן.
 הורד את הrepo 
+
 git clone https://github.com/maromshriki/marom_tool3.git
 
 חשבון AWS עם הרשאות מתאימות (EC2, S3, Route53)
@@ -17,6 +19,7 @@ aws configure והשלמת כל הנתונים שלך
 
 התקן את התלויות והכן את הסביבה תן הרשאות לקובץ marom.sh והרץ אותו:
 chmod +x marom.sh
+
 ./marom.sh
 
 הגדר הרשאות AWS (באמצעות aws configure או environment variables).
