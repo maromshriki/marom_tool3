@@ -32,7 +32,7 @@ def create_instance(instance_type: str, os: str):
     )
 
     instance_id = response["Instances"][0]["InstanceId"]
-    return f"✅ EC2 instance נוצר בהצלחה! InstanceId: {instance_id}"
+    return f" EC2 instance created InstanceId: {instance_id}"
 
 
 def get_default_subnet():
@@ -61,4 +61,4 @@ def describe_instances():
 
 def terminate_instance(instance_id: str):
     ec2.terminate_instances(InstanceIds=[instance_id])
-    return f"🛑 EC2 instance {instance_id} הסתיים בהצלחה."
+    return f" EC2 instance {instance_id} shutting down"
