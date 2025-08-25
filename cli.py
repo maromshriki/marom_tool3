@@ -27,6 +27,11 @@ def main():
     s3_create.add_argument("--name", required=True, help="Bucket name")
 
     s3_subparsers.add_parser("list", help="List S3 buckets created by this tool")
+    # s3 upload
+    s3_upload = s3_subparsers.add_parser("upload", help="Upload file to S3 bucket")
+    s3_upload.add_argument("--bucket", required=True, help="Bucket name")
+    s3_upload.add_argument("--file", required=True, help="Local file path")
+    s3_upload.add_argument("--key", required=False, help="Object key name (optional)")
 
     s3_delete = s3_subparsers.add_parser("delete", help="Delete S3 bucket")
     s3_delete.add_argument("--name", required=True, help="Bucket name")
@@ -50,6 +55,9 @@ def main():
     elif args.resource == "s3":
         if args.action == "create":
             print(s3_handler.create_bucket(args.name))
+        elif args.resource == "s3" and args.action == "upload":
+            print(s3_handler.upload_file(args.bucket, args.file, args.key))
+    
         elif args.action == "list":
             buckets = s3_handler.list_buckets()
             if not buckets:
