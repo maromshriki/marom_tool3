@@ -28,7 +28,7 @@ def create_instance(instance_type, os_type, key_name):
         ]
     )
     instance_id = resp["Instances"][0]["InstanceId"]
-    return f"✅ EC2 Instance נוצר בהצלחה: {instance_id}"
+    return f" EC2 Instance created {instance_id}"
 
 def describe_instances():
     ec2 = boto3.client("ec2")
@@ -42,4 +42,4 @@ def describe_instances():
 def terminate_instance(instance_id):
     ec2 = boto3.client("ec2")
     ec2.terminate_instances(InstanceIds=[instance_id])
-    return f"🛑 EC2 Instance {instance_id} נמחק בהצלחה"
+    return f" EC2 Instance deleted {instance_id} "
