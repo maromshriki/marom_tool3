@@ -19,6 +19,6 @@ def create_record(zone_id, name, record_type, value):
                 ]
             }
         )
-        return f"✅ רשומת DNS נוצרה בהצלחה: {name} -> {value}"
+        return f" secsuuses: {name} -> {value}"
     except Exception as e:
-        return f"❌ שגיאה ביצירת רשומה: {e}"
+        return f"error didnt work: {e}"
