@@ -9,7 +9,7 @@ def create_bucket(bucket_name: str):
         Bucket=bucket_name,
         CreateBucketConfiguration={"LocationConstraint": DEFAULT_REGION}
     )
-    return f"✅ S3 bucket {bucket_name} נוצר בהצלחה."
+    return f" S3 bucket created {bucket_name} "
 
 
 def list_buckets():
@@ -20,4 +20,17 @@ def list_buckets():
 
 def delete_bucket(bucket_name: str):
     s3.delete_bucket(Bucket=bucket_name)
-    return f"🛑 S3 bucket {bucket_name} נמחק בהצלחה."
+    return f" S3 bucket {bucket_name} deleted."
+
+def upload_file(bucket_name: str, file_path: str, object_name: str = None):
+    
+    import os
+    if object_name is None:
+        object_name = os.path.basename(file_path)
+
+    try:
+        s3.upload_file(file_path, bucket_name, object_name)
+        return f"file '{file_path}' uploaded '{bucket_name}' name '{object_name}'"
+    except Exception as e:
+        return f" {str(e)}"
+
