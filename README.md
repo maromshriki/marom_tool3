@@ -5,8 +5,13 @@ EC2, ‏S3, ‏Route53.
 הכלי נבנה לעבודה עם region us-east-1 בלבד, כולל פלט נקי וברור.
 
 
-
+הורד git 
+    sudo yum install git -y
+    
 וודא שיש לך Python 3.9+ מותקן.
+הורד את הrepo 
+git clone https://github.com/maromshriki/marom_tool3.git
+
 חשבון AWS עם הרשאות מתאימות (EC2, S3, Route53)
 aws configure והשלמת כל הנתונים שלך
 
