@@ -14,14 +14,21 @@ def create_bucket(bucket_name):
                 Bucket=bucket_name,
                 CreateBucketConfiguration={"LocationConstraint": region}
             )
-        return f"✅ Bucket נוצר בהצלחה: {bucket_name}"
+        return f"Bucket created: {bucket_name}"
     except Exception as e:
-        return f"❌ שגיאה ביצירת bucket: {e}"
+        return f"bucket: {e}"
 
 def upload_file(bucket_name, file_path):
     s3 = boto3.client("s3")
     try:
         s3.upload_file(file_path, bucket_name, os.path.basename(file_path))
-        return f"📤 הקובץ {file_path} הועלה בהצלחה ל-{bucket_name}"
+        return f" file{file_path} uploaded to {bucket_name}"
     except Exception as e:
-        return f"❌ שגיאה בהעלאת קובץ: {e}"
+        return f" {e}"
+def delete_bucket(bucket_name):
+    s3 = boto3.client("s3")
+    try:
+        s3.delete_bucket(Bucket=bucket_name)
+        return f" Bucket deleted: {bucket_name}"
+    except ClientError as e:
+        return f"couldnent delete bucket: {e}"
