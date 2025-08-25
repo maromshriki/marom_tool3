@@ -1,36 +1,32 @@
 import boto3
-from config import DEFAULT_REGION
+import os
 
-s3 = boto3.client("s3", region_name=DEFAULT_REGION)
-
-
-def create_bucket(bucket_name: str):
-    s3.create_bucket(
-        Bucket=bucket_name,
-        CreateBucketConfiguration={"LocationConstraint": DEFAULT_REGION}
-    )
-    return f" S3 bucket created {bucket_name} "
-
+def create_bucket(bucket_name):
+    try:
+        region = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
+        print(f"==> Using region: {region}")
+        s3 = boto3.client("s3", region_name=region)
+        print(f"==> Using endpoint: {s3.meta.endpoint_url}")
+        if region == "us-east-1":
+            s3.create_bucket(Bucket=bucket_name)
+        else:
+            s3.create_bucket(
+                Bucket=bucket_name,
+                CreateBucketConfiguration={"LocationConstraint": region}
+            )
+        return f"✅ Bucket נוצר בהצלחה: {bucket_name}"
+    except Exception as e:
+        return f"❌ שגיאה ביצירת bucket: {str(e)}"
 
 def list_buckets():
-    buckets = s3.list_buckets()["Buckets"]
-    result = [b["Name"] for b in buckets if b["Name"].startswith("marom-")]
-    return result
+    s3 = boto3.client("s3")
+    resp = s3.list_buckets()
+    return [b["Name"] for b in resp["Buckets"]]
 
-
-def delete_bucket(bucket_name: str):
-    s3.delete_bucket(Bucket=bucket_name)
-    return f" S3 bucket {bucket_name} deleted."
-
-def upload_file(bucket_name: str, file_path: str, object_name: str = None):
-    
-    import os
-    if object_name is None:
-        object_name = os.path.basename(file_path)
-
+def delete_bucket(bucket_name):
+    s3 = boto3.client("s3")
     try:
-        s3.upload_file(file_path, bucket_name, object_name)
-        return f"file '{file_path}' uploaded '{bucket_name}' name '{object_name}'"
+        s3.delete_bucket(Bucket=bucket_name)
+        return f"🗑️ Bucket נמחק בהצלחה: {bucket_name}"
     except Exception as e:
-        return f" {str(e)}"
-
+        return f"❌ שגיאה במחיקת bucket: {str(e)}"

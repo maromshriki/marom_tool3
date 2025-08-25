@@ -1,64 +1,44 @@
 import boto3
-from config import DEFAULT_REGION
 
-ec2 = boto3.client("ec2", region_name=DEFAULT_REGION)
-
-
-def create_instance(instance_type: str, os: str):
-    ami_map = {
+def create_instance(instance_type, os_name):
+    ec2 = boto3.client("ec2")
+    images = {
         "ubuntu": "ami-080e1f13689e07408",
-        "amazonlinux": "ami-0c02fb55956c7d316"
+        "amazon-linux": "ami-0c02fb55956c7d316"
     }
-
-    if os not in ami_map:
-        raise ValueError(f"OS {os} not supported. Choose from: {', '.join(ami_map.keys())}")
-
-    image_id = ami_map[os]
-
-    response = ec2.run_instances(
+    image_id = images.get(os_name, images["ubuntu"])
+    resp = ec2.run_instances(
         ImageId=image_id,
         InstanceType=instance_type,
         MinCount=1,
         MaxCount=1,
-        NetworkInterfaces=[{
-            "DeviceIndex": 0,
-            "AssociatePublicIpAddress": True,
-            "SubnetId": get_default_subnet()
-        }],
         TagSpecifications=[{
             "ResourceType": "instance",
-            "Tags": [{"Key": "CreatedBy", "Value": "marom_tool2"}]
+            "Tags": [{"Key": "CreatedBy", "Value": "marom_tool"}]
+        }],
+        NetworkInterfaces=[{
+            "AssociatePublicIpAddress": True,
+            "DeviceIndex": 0,
+            "DeleteOnTermination": True
         }]
     )
-
-    instance_id = response["Instances"][0]["InstanceId"]
-    return f" EC2 instance created InstanceId: {instance_id}"
-
-
-def get_default_subnet():
-    subnets = ec2.describe_subnets()["Subnets"]
-    if not subnets:
-        raise RuntimeError("No subnets found in region us-east-1")
-    return subnets[0]["SubnetId"]
-
+    instance_id = resp["Instances"][0]["InstanceId"]
+    return f"✅ EC2 Instance נוצר בהצלחה: {instance_id}"
 
 def describe_instances():
-    reservations = ec2.describe_instances(
-        Filters=[{"Name": "tag:CreatedBy", "Values": ["marom_tool2"]}]
-    )["Reservations"]
-
-    result = []
-    for r in reservations:
-        for inst in r["Instances"]:
-            result.append({
-                "InstanceId": inst["InstanceId"],
-                "State": inst["State"]["Name"],
-                "Type": inst["InstanceType"],
-                "PublicIp": inst.get("PublicIpAddress", "N/A")
+    ec2 = boto3.client("ec2")
+    resp = ec2.describe_instances()
+    instances = []
+    for res in resp["Reservations"]:
+        for inst in res["Instances"]:
+            instances.append({
+                "id": inst["InstanceId"],
+                "state": inst["State"]["Name"],
+                "type": inst["InstanceType"]
             })
-    return result
+    return instances
 
-
-def terminate_instance(instance_id: str):
+def terminate_instance(instance_id):
+    ec2 = boto3.client("ec2")
     ec2.terminate_instances(InstanceIds=[instance_id])
-    return f" EC2 instance {instance_id} shutting down"
+    return f"🗑️ EC2 Instance נמחק: {instance_id}"

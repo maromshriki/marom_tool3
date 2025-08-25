@@ -1,39 +1,56 @@
 import boto3
 
-route53 = boto3.client("route53")
+def create_hosted_zone(domain_name):
+    r53 = boto3.client("route53")
+    resp = r53.create_hosted_zone(
+        Name=domain_name,
+        CallerReference=domain_name,
+        HostedZoneConfig={"Comment": "Created by marom_tool", "PrivateZone": False}
+    )
+    return f"✅ Hosted Zone נוצר: {resp['HostedZone']['Id']}"
 
+def delete_hosted_zone(zone_id):
+    r53 = boto3.client("route53")
+    r53.delete_hosted_zone(Id=zone_id)
+    return f"🗑️ Hosted Zone נמחק: {zone_id}"
 
-def create_record(hosted_zone_id: str, record_name: str, record_type: str, record_value: str):
-    route53.change_resource_record_sets(
-        HostedZoneId=hosted_zone_id,
+def list_zones():
+    r53 = boto3.client("route53")
+    resp = r53.list_hosted_zones()
+    return [z["Name"] for z in resp["HostedZones"]]
+
+def add_record(zone_id, name, rtype, value):
+    r53 = boto3.client("route53")
+    r53.change_resource_record_sets(
+        HostedZoneId=zone_id,
         ChangeBatch={
             "Changes": [{
                 "Action": "CREATE",
                 "ResourceRecordSet": {
-                    "Name": record_name,
-                    "Type": record_type,
+                    "Name": name,
+                    "Type": rtype,
                     "TTL": 300,
-                    "ResourceRecords": [{"Value": record_value}]
+                    "ResourceRecords": [{"Value": value}]
                 }
             }]
         }
     )
-    return f"✅ Record {record_name} נוצר בהצלחה."
+    return f"✅ רשומה נוספה: {name} -> {value}"
 
-
-def delete_record(hosted_zone_id: str, record_name: str, record_type: str, record_value: str):
-    route53.change_resource_record_sets(
-        HostedZoneId=hosted_zone_id,
+def delete_record(zone_id, name, rtype, value):
+    r53 = boto3.client("route53")
+    r53.change_resource_record_sets(
+        HostedZoneId=zone_id,
         ChangeBatch={
             "Changes": [{
                 "Action": "DELETE",
                 "ResourceRecordSet": {
-                    "Name": record_name,
-                    "Type": record_type,
+                    "Name": name,
+                    "Type": rtype,
                     "TTL": 300,
-                    "ResourceRecords": [{"Value": record_value}]
+                    "ResourceRecords": [{"Value": value}]
                 }
             }]
         }
     )
-    return f"🛑 Record {record_name} נמחק בהצלחה."
+    return f"🗑️ רשומה נמחקה: {name}"
